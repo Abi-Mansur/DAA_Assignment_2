@@ -8,3 +8,6 @@
 
 * Run dataStructuresTest
 * Then run BenchmarkRunner 
+
+Then in your project directory will create results folder 
+And inside this folder will be results.csv
