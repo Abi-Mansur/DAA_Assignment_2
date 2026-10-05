@@ -19,48 +19,24 @@ public class DynamicArray {
 
     public void add(int index, int x) {
         if (index < 0 || index > size) throw new IndexOutOfBoundsException();
+        if (size == data.length) grow();
 
-        if (index == size) {
-            add(x);
-            return;
-        }
-
-        Node newNode = new Node(x);
-        metrics.moves++;
-        if (index == 0) {
-            newNode.next = head;
-            head = newNode;
-            metrics.moves++;
-        } else {
-            Node current = head;
+        for (int i = size; i > index; i--) {
+            data[i] = data[i - 1];
             metrics.steps++;
-            for (int i = 0; i < index - 1; i++) {
-                current = current.next;
-                metrics.steps++;
-            }
-            newNode.next = current.next;
-            current.next = newNode;
-            metrics.moves += 2;
+            metrics.moves++;
         }
+        data[index] = x;
+        metrics.moves++;
         size++;
     }
 
     public void remove(int index) {
         if (index < 0 || index >= size) throw new IndexOutOfBoundsException();
 
-        if (index == 0) {
-            head = head.next;
-            if (size == 1) tail = null;
-            metrics.moves++;
-        } else {
-            Node current = head;
+        for (int i = index; i < size - 1; i++) {
+            data[i] = data[i + 1];
             metrics.steps++;
-            for (int i = 0; i < index - 1; i++) {
-                current = current.next;
-                metrics.steps++;
-            }
-            current.next = current.next.next;
-            if (index == size - 1) tail = current;
             metrics.moves++;
         }
         size--;
@@ -68,25 +44,27 @@ public class DynamicArray {
 
     public int get(int index) {
         if (index < 0 || index >= size) throw new IndexOutOfBoundsException();
-        Node current = head;
         metrics.steps++;
-        for (int i = 0; i < index; i++) {
-            current = current.next;
-            metrics.steps++;
-        }
-        return current.value;
+        return data[index];
     }
 
     public boolean contains(int x) {
-        Node current = head;
-        metrics.steps++;
-        while (current != null) {
-            metrics.comparisons++;
-            if (current.value == x) return true;
-            current = current.next;
+        for (int i = 0; i < size; i++) {
             metrics.steps++;
+            metrics.comparisons++;
+            if (data[i] == x) return true;
         }
         return false;
+    }
+
+    private void grow() {
+        int[] newData = new int[data.length * 2];
+        for (int i = 0; i < size; i++) {
+            newData[i] = data[i];
+            metrics.steps++;
+            metrics.moves++;
+        }
+        data = newData;
     }
 
     public int size() {
