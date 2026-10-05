@@ -66,4 +66,30 @@ public class DynamicArray {
         size--;
     }
 
+    public int get(int index) {
+        if (index < 0 || index >= size) throw new IndexOutOfBoundsException();
+        Node current = head;
+        metrics.steps++;
+        for (int i = 0; i < index; i++) {
+            current = current.next;
+            metrics.steps++;
+        }
+        return current.value;
+    }
+
+    public boolean contains(int x) {
+        Node current = head;
+        metrics.steps++;
+        while (current != null) {
+            metrics.comparisons++;
+            if (current.value == x) return true;
+            current = current.next;
+            metrics.steps++;
+        }
+        return false;
+    }
+
+    public int size() {
+        return size;
+    }
 }
