@@ -46,7 +46,6 @@ public class BenchmarkRunner {
         Arrays.sort(timesArr);
         writeRow(writer, "W1", "-", "DynamicArray", n, timesArr[RUNS / 2], mArr);
 
-
         Metrics mList = new Metrics();
         long[] timesList = new long[RUNS];
         for (int r = 0; r < RUNS + 1; r++) {
@@ -109,4 +108,62 @@ public class BenchmarkRunner {
         writeRow(writer, "W2", "-", "MyLinkedList", n, timesList[RUNS / 2], mList);
     }
 
+    private static void runW3(PrintWriter writer, int n, String variant) {
+
+        Metrics mArr = new Metrics();
+        long[] timesArr = new long[RUNS];
+        for (int r = 0; r < RUNS + 1; r++) {
+            DynamicArray arr = new DynamicArray(mArr);
+            Random rand = new Random(42);
+            for (int i = 0; i < n; i++) arr.add(rand.nextInt());
+            mArr.reset();
+            long start = System.currentTimeMillis();
+            int idx = variant.equals("head") ? 0 : arr.size() / 2;
+            for (int i = 0; i < 1000; i++) arr.add(idx, rand.nextInt());
+            for (int i = 0; i < 1000; i++) arr.remove(idx);
+            long elapsed = System.currentTimeMillis() - start;
+            if (r > 0) timesArr[r - 1] = elapsed;
+        }
+        Arrays.sort(timesArr);
+        writeRow(writer, "W3", variant, "DynamicArray", n, timesArr[RUNS / 2], mArr);
+
+
+        Metrics mList = new Metrics();
+        long[] timesList = new long[RUNS];
+        for (int r = 0; r < RUNS + 1; r++) {
+            MyLinkedList list = new MyLinkedList(mList);
+            Random rand = new Random(42);
+            for (int i = 0; i < n; i++) list.add(rand.nextInt());
+            mList.reset();
+            long start = System.currentTimeMillis();
+            int idx = variant.equals("head") ? 0 : list.size() / 2;
+            for (int i = 0; i < 1000; i++) list.add(idx, rand.nextInt());
+            for (int i = 0; i < 1000; i++) list.remove(idx);
+            long elapsed = System.currentTimeMillis() - start;
+            if (r > 0) timesList[r - 1] = elapsed;
+        }
+        Arrays.sort(timesList);
+        writeRow(writer, "W3", variant, "MyLinkedList", n, timesList[RUNS / 2], mList);
+    }
+
+    private static void runW4(PrintWriter writer, int n) {
+        Metrics mHeap = new Metrics();
+        long[] times = new long[RUNS];
+        for (int r = 0; r < RUNS + 1; r++) {
+            MinHeap heap = new MinHeap(n, mHeap);
+            Random rand = new Random(42);
+            mHeap.reset();
+            long start = System.currentTimeMillis();
+            for (int i = 0; i < n; i++) heap.insert(rand.nextInt());
+            for (int i = 0; i < n; i++) heap.extractMin();
+            long elapsed = System.currentTimeMillis() - start;
+            if (r > 0) times[r - 1] = elapsed;
+        }
+        Arrays.sort(times);
+        writeRow(writer, "W4", "-", "MinHeap", n, times[RUNS / 2], mHeap);
+    }
+
+    private static void writeRow(PrintWriter w, String wl, String var, String struct, int n, long time, Metrics m) {
+        w.printf("%s,%s,%s,%d,%d,%d,%d,%d%n", wl, var, struct, n, time, m.steps, m.moves, m.comparisons);
+    }
 }
