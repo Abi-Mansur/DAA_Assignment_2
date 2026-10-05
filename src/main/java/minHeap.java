@@ -53,9 +53,52 @@ public class MinHeap {
         }
     }
 
+    private void bubbleDown(int index) {
+        while (index < size) {
+            int left = 2 * index + 1;
+            int right = 2 * index + 2;
+            int smallest = index;
 
+            if (left < size) {
+                metrics.steps += 2;
+                metrics.comparisons++;
+                if (heap[left] < heap[smallest]) smallest = left;
+            }
 
+            if (right < size) {
+                metrics.steps += 2;
+                metrics.comparisons++;
+                if (heap[right] < heap[smallest]) smallest = right;
+            }
 
+            if (smallest != index) {
+                swap(index, smallest);
+                index = smallest;
+            } else {
+                break;
+            }
+        }
+    }
 
+    private void swap(int i, int j) {
+        int temp = heap[i];
+        heap[i] = heap[j];
+        heap[j] = temp;
+        metrics.moves += 3;
+    }
+
+    private void grow() {
+        int[] newHeap = new int[heap.length * 2];
+        for (int i = 0; i < size; i++) {
+            newHeap[i] = heap[i];
+            metrics.steps++;
+            metrics.moves++;
+        }
+        heap = newHeap;
+    }
+
+    public int size() {
+        return size;
+    }
 
 }
